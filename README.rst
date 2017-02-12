@@ -39,7 +39,7 @@ straight-forward, but does require knowledge of how they are constructed.
 The example below shows how a Counter metric can be constructed and marshalled
 into a format suitable to send to Prometheus in a response.
 
-.. code-block:: python3
+.. code:: python
 
     import collections
     import datetime

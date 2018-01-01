@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
 
-cd ../dist
-RELEASE_ARCHIVE=`ls prometheus_metrics_proto-*.tar.gz`
 
-if [ -z "$RELEASE_ARCHIVE" ]; then
-  echo "No release archive found. Expected prometheus_metrics_proto-YY.MM.MICRO.tar.gz"
+if [ -z "$1" ]; then
+  echo "usage: $0 prometheus_metrics_proto-YY.MM.MICRO-py3-none-any.whl"
   exit
 fi
 
-RELEASE_DIR=`echo $RELEASE_ARCHIVE | sed -e "s/\.tar\.gz//g"`
+RELEASE_ARCHIVE="$1"
 
 echo "Release archive: $RELEASE_ARCHIVE"
-echo "Release directory: $RELEASE_DIR"
 
 echo "Removing any old artefacts"
-rm -rf $RELEASE_DIR
 rm -rf test_venv
 
 echo "Creating test virtual environment"
@@ -27,13 +23,14 @@ echo "Upgrading pip"
 pip install pip --upgrade
 
 echo "Installing $RELEASE_ARCHIVE"
-tar xf $RELEASE_ARCHIVE
-cd $RELEASE_DIR
-pip install .
+pip install $RELEASE_ARCHIVE
 
 echo "Running tests"
-make test
-cd ..
+cd ../tests
+python -m unittest discover -s .
 
 echo "Exiting test virtual environment"
 deactivate
+
+echo "Removing any old artefacts"
+rm -rf test_venv

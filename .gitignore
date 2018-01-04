@@ -91,3 +91,5 @@ ENV/
 pyrobuf
 prometheus_metrics_proto.*
 
+# vscode
+.vscode/

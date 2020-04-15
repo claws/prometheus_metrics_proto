@@ -2,8 +2,6 @@
 import os
 import re
 
-from pip.req import parse_requirements
-from pip.download import PipSession
 from setuptools import setup, find_packages
 
 regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)

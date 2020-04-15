@@ -29,4 +29,4 @@ from .api import (
 from . import utils
 
 
-__version__ = '18.01.01'
+__version__ = '18.01.02'

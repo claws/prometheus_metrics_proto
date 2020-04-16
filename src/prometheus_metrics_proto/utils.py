@@ -1,7 +1,7 @@
-'''
+"""
 This module provides wrapper functions to help create the various data types
 used in Prometheus metrics.
-'''
+"""
 
 import collections
 import datetime
@@ -19,7 +19,8 @@ from .prometheus_metrics_pb2 import (
     Metric,
     MetricFamily,
     Summary,
-    Quantile)
+    Quantile,
+)
 from typing import Dict, List, Sequence, Tuple, Union
 
 
@@ -36,12 +37,14 @@ MetricValueType = Union[float, SummaryDictType, HistogramDictType]
 MetricTupleType = Tuple[LabelsType, MetricValueType]
 
 
-def create_counter_metric(labels: LabelsType,
-                          value: float,
-                          timestamp: bool = False,
-                          const_labels: LabelsType = None,
-                          ordered: bool = True) -> Metric:
-    ''' Create a Metric object containing a Counter object.
+def create_counter_metric(
+    labels: LabelsType,
+    value: float,
+    timestamp: bool = False,
+    const_labels: LabelsType = None,
+    ordered: bool = True,
+) -> Metric:
+    """ Create a Metric object containing a Counter object.
 
     A Metric object is a container for a single multi-dimensional (e.g.
     different labels) instance of a specific metric, in this case a Counter.
@@ -54,7 +57,7 @@ def create_counter_metric(labels: LabelsType,
     :param ordered: a boolean that determines if the labels are sorted by key.
       By default this is True.
     :returns: a Metric object containing a Counter object
-    '''
+    """
     unified_labels = _unify_labels(labels, const_labels, ordered=ordered)
     labels = [LabelPair(name=k, value=str(v)) for k, v in unified_labels.items()]
     counter = Counter(value=value)
@@ -64,12 +67,14 @@ def create_counter_metric(labels: LabelsType,
     return metric
 
 
-def create_gauge_metric(labels: LabelsType,
-                        value: float,
-                        timestamp: bool = None,
-                        const_labels: LabelsType = None,
-                        ordered=True) -> Metric:
-    ''' Create a Metric object containing a Gauge object.
+def create_gauge_metric(
+    labels: LabelsType,
+    value: float,
+    timestamp: bool = None,
+    const_labels: LabelsType = None,
+    ordered=True,
+) -> Metric:
+    """ Create a Metric object containing a Gauge object.
 
     A Metric object is a container for a single multi-dimensional (e.g.
     different labels) instance of a specific metric, in this case a Gauge.
@@ -82,7 +87,7 @@ def create_gauge_metric(labels: LabelsType,
     :param ordered: a boolean that determines if the labels are sorted by key.
       By default this is True.
     :returns: a Metric object containing a Gauge object
-    '''
+    """
     unified_labels = _unify_labels(labels, const_labels, ordered=ordered)
     labels = [LabelPair(name=k, value=str(v)) for k, v in unified_labels.items()]
     gauge = Gauge(value=value)
@@ -92,14 +97,16 @@ def create_gauge_metric(labels: LabelsType,
     return metric
 
 
-def create_summary_metric(labels: LabelsType,
-                          values: SummaryDictType,
-                          samples_count: int,
-                          samples_sum: float,
-                          timestamp: bool = None,
-                          const_labels: LabelsType = None,
-                          ordered=True) -> Metric:
-    ''' Create a Metric object containing a Summary object.
+def create_summary_metric(
+    labels: LabelsType,
+    values: SummaryDictType,
+    samples_count: int,
+    samples_sum: float,
+    timestamp: bool = None,
+    const_labels: LabelsType = None,
+    ordered=True,
+) -> Metric:
+    """ Create a Metric object containing a Summary object.
 
     A Metric object is a container for a single multi-dimensional (e.g.
     different labels) instance of a specific metric, in this case a Summary.
@@ -115,7 +122,7 @@ def create_summary_metric(labels: LabelsType,
     :param ordered: a boolean that determines if the labels are sorted by key.
       By default this is True.
     :returns: a Metric object containing a Summary object
-    '''
+    """
     unified_labels = _unify_labels(labels, const_labels, ordered=ordered)
     labels = [LabelPair(name=k, value=str(v)) for k, v in unified_labels.items()]
     # The count and sum values may also be present in the values.
@@ -127,23 +134,24 @@ def create_summary_metric(labels: LabelsType,
         if not isinstance(k, str):
             quantiles.append(Quantile(quantile=k, value=v))
     summary = Summary(
-        sample_count=samples_count,
-        sample_sum=samples_sum,
-        quantile=quantiles)
+        sample_count=samples_count, sample_sum=samples_sum, quantile=quantiles
+    )
     metric = Metric(label=labels, summary=summary)
     if timestamp:
         metric.timestamp_ms = _timestamp_ms()
     return metric
 
 
-def create_histogram_metric(labels: LabelsType,
-                            values: HistogramDictType,
-                            samples_count: int,
-                            samples_sum: float,
-                            timestamp: bool = None,
-                            const_labels: LabelsType = None,
-                            ordered=True) -> Metric:
-    ''' Create a Metric object containing a Histogram object.
+def create_histogram_metric(
+    labels: LabelsType,
+    values: HistogramDictType,
+    samples_count: int,
+    samples_sum: float,
+    timestamp: bool = None,
+    const_labels: LabelsType = None,
+    ordered=True,
+) -> Metric:
+    """ Create a Metric object containing a Histogram object.
 
     A Metric object is a container for a single multi-dimensional (e.g.
     different labels) instance of a specific metric, in this case a Histogram.
@@ -159,7 +167,7 @@ def create_histogram_metric(labels: LabelsType,
     :param ordered: a boolean that determines if the labels are sorted by key.
       By default this is True.
     :returns: a Metric object containing a Summary object
-    '''
+    """
     unified_labels = _unify_labels(labels, const_labels, ordered=ordered)
     labels = [LabelPair(name=k, value=str(v)) for k, v in unified_labels.items()]
     # The count and sum values may also be present in the values.
@@ -169,23 +177,24 @@ def create_histogram_metric(labels: LabelsType,
         if not isinstance(k, str):
             buckets.append(Bucket(cumulative_count=v, upper_bound=k))
     histogram = Histogram(
-        sample_count=samples_count,
-        sample_sum=samples_sum,
-        bucket=buckets)
+        sample_count=samples_count, sample_sum=samples_sum, bucket=buckets
+    )
     metric = Metric(label=labels, histogram=histogram)
     if timestamp:
         metric.timestamp_ms = _timestamp_ms()
     return metric
 
 
-def create_metric_family(metric_name: str,
-                         metric_help: str,
-                         metric_type: MetricType,
-                         metrics: Union[Sequence[Metric], Sequence[MetricTupleType]],
-                         timestamp: bool = False,
-                         const_labels: LabelsType = None,
-                         ordered=True) -> MetricFamily:
-    ''' Create a MetricsFamily object.
+def create_metric_family(
+    metric_name: str,
+    metric_help: str,
+    metric_type: MetricType,
+    metrics: Union[Sequence[Metric], Sequence[MetricTupleType]],
+    timestamp: bool = False,
+    const_labels: LabelsType = None,
+    ordered=True,
+) -> MetricFamily:
+    """ Create a MetricsFamily object.
 
     A MetricFamily object is the parent container for Metric objects.
     A MetricFamily object holds the name and help string for a metric along
@@ -221,7 +230,7 @@ def create_metric_family(metric_name: str,
       argument is not a pre-generated list of Metrics objects.
 
     :returns: a MetricFamily object populated with metrics data
-    '''
+    """
     if metrics:
 
         if not all([isinstance(m, Metric) for m in metrics]):
@@ -233,39 +242,51 @@ def create_metric_family(metric_name: str,
 
                 if metric_type == COUNTER:
                     metric = create_counter_metric(
-                        metric_labels, metric_values,
+                        metric_labels,
+                        metric_values,
                         timestamp=timestamp,
                         const_labels=const_labels,
-                        ordered=ordered)
+                        ordered=ordered,
+                    )
 
                 elif metric_type == GAUGE:
                     metric = create_gauge_metric(
-                        metric_labels, metric_values,
+                        metric_labels,
+                        metric_values,
                         timestamp=timestamp,
                         const_labels=const_labels,
-                        ordered=ordered)
+                        ordered=ordered,
+                    )
 
                 elif metric_type == SUMMARY:
                     # The count and sum values are expected to be present in the
                     # values dict.
-                    count = metric_values['count']
-                    sum_ = metric_values['sum']
+                    count = metric_values["count"]
+                    sum_ = metric_values["sum"]
                     metric = create_summary_metric(
-                        metric_labels, metric_values, count, sum_,
+                        metric_labels,
+                        metric_values,
+                        count,
+                        sum_,
                         timestamp=timestamp,
                         const_labels=const_labels,
-                        ordered=ordered)
+                        ordered=ordered,
+                    )
 
                 elif metric_type == HISTOGRAM:
                     # The count and sum values are expected to be present in the
                     # values dict.
-                    count = metric_values['count']
-                    sum_ = metric_values['sum']
+                    count = metric_values["count"]
+                    sum_ = metric_values["sum"]
                     metric = create_histogram_metric(
-                        metric_labels, metric_values, count, sum_,
+                        metric_labels,
+                        metric_values,
+                        count,
+                        sum_,
                         timestamp=timestamp,
                         const_labels=const_labels,
-                        ordered=ordered)
+                        ordered=ordered,
+                    )
 
                 else:
                     raise Exception("Invalid metric_type: {}".format(metric_type))
@@ -278,40 +299,39 @@ def create_metric_family(metric_name: str,
             metrics = _metrics
 
     mf = MetricFamily(
-        name=metric_name, help=metric_help, type=metric_type, metric=metrics)
+        name=metric_name, help=metric_help, type=metric_type, metric=metrics
+    )
 
     return mf
 
 
 def create_labels(labels: LabelsType) -> List[LabelPair]:
-    ''' Create a list of LabelPair objects from a dict of labels. '''
+    """ Create a list of LabelPair objects from a dict of labels. """
     return [LabelPair(name=k, value=str(v)) for k, v in labels.items()]
 
 
 def create_quantile(quantile: float, value: float) -> Quantile:
-    ''' Create a Quantile object '''
+    """ Create a Quantile object """
     return Quantile(quantile=quantile, value=value)
 
 
 def create_bucket(cumulative_count: int, upper_bound: float) -> Bucket:
-    ''' Create a Bucket object '''
+    """ Create a Bucket object """
     return Bucket(cumulative_count=cumulative_count, upper_bound=upper_bound)
 
 
 def _timestamp_ms() -> int:
-    ''' Return a UTC timestamp, in milliseconds.
+    """ Return a UTC timestamp, in milliseconds.
 
     This function is used to populate the timestamp_ms field in a Metric object.
-    '''
-    return int(
-        datetime.datetime.now(
-            tz=datetime.timezone.utc).timestamp() * 1000)
+    """
+    return int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp() * 1000)
 
 
-def _unify_labels(labels: LabelsType = None,
-                  const_labels: LabelsType = None,
-                  ordered: bool = True) -> LabelsType:
-    ''' Return a dict that combines labels and const_labels for a metric.
+def _unify_labels(
+    labels: LabelsType = None, const_labels: LabelsType = None, ordered: bool = True
+) -> LabelsType:
+    """ Return a dict that combines labels and const_labels for a metric.
 
     If ordered is True then the combined labels are sorted by key.
 
@@ -324,7 +344,7 @@ def _unify_labels(labels: LabelsType = None,
       By default this is True.
 
     :returns: a dict of labels
-    '''
+    """
     unified_labels = {}
 
     if const_labels:
@@ -335,6 +355,7 @@ def _unify_labels(labels: LabelsType = None,
 
     if ordered and unified_labels:
         unified_labels = collections.OrderedDict(
-            sorted(unified_labels.items(), key=lambda t: t[0]))
+            sorted(unified_labels.items(), key=lambda t: t[0])
+        )
 
     return unified_labels

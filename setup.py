@@ -46,6 +46,7 @@ if __name__ == "__main__":
         author_email="clawsicus@gmail.com",
         description="Prometheus binary format metrics data structures for Python client libraries",
         long_description=get_long_description(),
+        long_description_content_type="text/markdown",
         license="MIT",
         keywords=["prometheus", "monitoring", "metrics"],
         url="https://github.com/claws/prometheus_metrics_proto",

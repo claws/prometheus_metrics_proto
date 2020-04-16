@@ -1,0 +1,25 @@
+[run]
+branch = True
+source =
+    prometheus_metrics_proto
+
+[paths]
+source =
+    src/prometheus_metrics_proto
+    **/site-packages/prometheus_metrics_proto
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug
+    raise AssertionError
+    raise NotImplentedError
+    if 0:
+    if __name__ == .__main__.:
+
+ignore_errors = True
+
+[html]
+title = prometheus_metrics_proto Coverage Test Report
+directory = htmlcov
